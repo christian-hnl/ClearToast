@@ -3,1868 +3,863 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClearToast - Premium Toaster</title>
+    <title>ClearToast Pro - Die Revolution des Toastens</title>
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #121212; color: #f0f0f0; overflow-x: hidden; }
-        
-        /* Header mit Logo */
-        .header { 
-            position: fixed; 
-            top: 0; 
-            width: 100%; 
-            padding: 0.8rem 2rem; 
-            background: rgba(30, 30, 30, 0.95); 
-            backdrop-filter: blur(10px); 
-            z-index: 1000; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .logo-placeholder {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #00d1c1, #00a8ff);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-link { color: #f0f0f0; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-        .nav-link:hover { color: #00d1c1; }
-        
-        /* Warenkorb Icon */
-        .cart-icon {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.5rem;
-        }
-        
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #00d1c1;
-            color: #121212;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        
-        /* Warenkorb Overlay */
-        .cart-overlay {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 100%;
-            max-width: 400px;
-            height: 100%;
-            background: #1e1e1e;
-            z-index: 2000;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-            transition: right 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        
-        .cart-overlay.active {
-            right: 0;
-        }
-        
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid #333;
-        }
-        
-        .close-cart {
-            background: none;
-            border: none;
-            color: #f0f0f0;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        
-        .cart-items {
-            flex: 1;
-            padding: 1.5rem;
-        }
-        
-        .cart-item {
-            display: flex;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid #333;
-        }
-        
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            background: #2a2a2a;
-            border-radius: 8px;
-            padding: 5px;
-        }
-        
-        .cart-item-details {
-            flex: 1;
-        }
-        
-        .cart-item-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        
-        .cart-item-price {
-            color: #00d1c1;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .cart-item-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .quantity-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #333;
-            color: #f0f0f0;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .remove-btn {
-            background: none;
-            border: none;
-            color: #ff5f56;
-            cursor: pointer;
-            margin-left: auto;
-        }
-        
-        .cart-total {
-            padding: 1.5rem;
-            border-top: 1px solid #333;
-            font-size: 1.2rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .cart-actions {
-            padding: 0 1.5rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .checkout-btn {
-            padding: 1rem;
-            background: #00d1c1;
-            color: #121212;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .checkout-btn:hover {
-            background: #00b3a5;
-        }
-        
-        .continue-btn {
-            padding: 1rem;
-            background: #333;
-            color: #f0f0f0;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .continue-btn:hover {
-            background: #444;
-        }
-        
-        /* Checkout Steps */
-        .checkout-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            background: #1e1e1e;
-            border-radius: 16px;
-            overflow: hidden;
-            display: none;
-        }
-        
-        .checkout-steps {
-            display: flex;
-            background: #2d2d2d;
-        }
-        
-        .checkout-step {
-            flex: 1;
-            padding: 1rem;
-            text-align: center;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-        }
-        
-        .checkout-step.active {
-            border-bottom: 3px solid #00d1c1;
-            color: #00d1c1;
-        }
-        
-        .step-content {
-            padding: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 0.8rem;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: #f0f0f0;
-            font-size: 1rem;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
-        .checkout-navigation {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            border-top: 1px solid #333;
-        }
-        
-        .nav-btn {
-            padding: 0.8rem 1.5rem;
-            background: #333;
-            color: #f0f0f0;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .nav-btn.primary {
-            background: #00d1c1;
-            color: #121212;
-        }
-        
-        .nav-btn:hover {
-            opacity: 0.9;
-        }
-        
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 1.5rem 0;
-        }
-        
-        .payment-method {
-            border: 2px solid #444;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .payment-method.selected {
-            border-color: #00d1c1;
-            background: rgba(0, 209, 193, 0.1);
-        }
-        
-        .payment-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .confirmation-container {
-            text-align: center;
-            padding: 3rem;
-        }
-        
-        .confirmation-icon {
-            font-size: 4rem;
-            color: #00d1c1;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Verkaufsbereich - Dark Mode */
-        .sale-section {
-            background: linear-gradient(135deg, #00ccff1c 0%, #0000006c 100%);
-            border: 3px solid #00d1c1;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 1200px;
-            margin: 5rem auto;
-            display: flex;
-            gap: 3rem;
-            flex-wrap: wrap;
-            align-items: center;
-            box-shadow: 0 8px 30px rgba(0, 209, 193, 0.15);
-        }
-        
-        .sale-main-image-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .sale-main-image {
-            width: 400px;
-            height: 400px;
-            object-fit: contain;
-            border-radius: 16px;
-            background: #1e1e1e;
-            padding: 1rem;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
-            margin-bottom: 1.5rem;
-        }
-        
-        .sale-gallery {
-            display: flex;
-            gap: 1.5rem;
-        }
-        
-        .sale-gallery img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: border-color 0.3s ease, transform 0.3s ease;
-            background: #1e1e1e;
-        }
-        
-        .sale-gallery img:hover,
-        .sale-gallery img.active {
-            border-color: #00d1c1;
-            transform: scale(1.05);
-        }
-        
-        .sale-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 1rem;
-        }
-        
-        .sale-details h2 {
-            font-size: 2.75rem;
-            margin-bottom: 0.5rem;
-            color: #00d1c1;
-        }
-        
-        .sale-rating {
-            color: #ffd700;
-            font-size: 1.5rem;
-        }
-        
-        .sale-price {
-            font-size: 3rem;
-            color: #00d1c1;
-            margin: 0.5rem 0;
-        }
-        
-        .sale-btn {
-            padding: 1.25rem 2.5rem;
-            background: #00d1c1;
-            color: #121212;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.125rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            align-self: start;
-            box-shadow: 0 4px 15px rgba(0, 209, 193, 0.3);
-        }
-        
-        .sale-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 209, 193, 0.4);
-        }
-        
-        /* Betriebssystem Fenster - Dark Mode */
-        .os-window {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 1200px;
-            height: 80vh;
-            background: #1e1e1e;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid #333;
-        }
-        
-        .os-window.active {
-            display: flex;
-        }
-        
-        .os-titlebar {
-            height: 48px;
-            background: #2d2d2d;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            border-bottom: 1px solid #444;
-        }
-        
-        .os-title {
-            flex: 1;
-            font-weight: 500;
-            color: #f0f0f0;
-        }
-        
-        .os-controls {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .os-btn {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .os-btn.close {
-            background: #ff5f56;
-        }
-        
-        .os-btn.minimize {
-            background: #ffbd2e;
-        }
-        
-        .os-btn.maximize {
-            background: #27c93f;
-        }
-        
-        .os-content {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #121212;
-        }
-
-        /* Toaster UI Demo - Dark Mode */
-        .toaster-demo-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .toaster-app {
-            width: 100%;
-            max-width: 800px;
-            height: 400px;
-            background: #1e1e1e;
-            border-radius: 32px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-            transition: height 0.6s ease;
-            border: 1px solid #333;
-        }
-        
-        /* Auswahlansicht */
-        .selection-view {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transition: transform 0.6s ease;
-        }
-        
-        .slider-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            padding: 30px 0;
-        }
-        
-        .slider {
-            display: flex;
-            height: 100%;
-            transition: transform 0.5s ease;
-            align-items: center;
-        }
-        
-        .slide {
-            min-width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        
-        .toast-img {
-            height: 240px;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
-        }
-        
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 64px;
-            height: 64px;
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid #444;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-            z-index: 10;
-            transition: all 0.2s;
-        }
-        
-        .prev-btn {
-            left: 20px;
-        }
-        
-        .next-btn {
-            right: 20px;
-        }
-        
-        .arrow {
-            width: 16px;
-            height: 16px;
-            border-top: 4px solid #f0f0f0;
-            border-right: 4px solid #f0f0f0;
-        }
-        
-        .prev-btn .arrow {
-            transform: rotate(-135deg);
-        }
-        
-        .next-btn .arrow {
-            transform: rotate(45deg);
-        }
-        
-        .browning-indicator {
-            position: absolute;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-        
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #444;
-            transition: all 0.3s;
-        }
-        
-        .dot.active {
-            background: var(--primary-color);
-        }
-        
-        .start-btn {
-            position: absolute;
-            right: 30px;
-            bottom: 24px;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            border: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 6px 20px rgba(0, 209, 193, 0.4);
-            z-index: 10;
-            cursor: pointer;
-        }
-        
-        .start-icon {
-            width: 32px;
-            height: 32px;
-            background: #121212;
-            clip-path: polygon(0 0, 0% 100%, 100% 50%);
-            margin-left: 4px;
-        }
-        
-        /* Timer-Ansicht */
-        .timer-view {
-            width: 100%;
-            height: 400px;
-            position: absolute;
-            background: #1e1e1e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transform: translateX(100%);
-            transition: transform 0.6s ease;
-            padding: 50px 0;
-            overflow: visible;
-        }
-        
-        .progress-container {
-            width: 100%;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: visible;
-        }
-        
-        .progress-ring {
-            width: 160px;
-            height: 160px;
-        }
-        
-        .progress-circle {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-            overflow: visible;
-        }
-        
-        .progress-circle-bg {
-            fill: none;
-            stroke: #333;
-            stroke-width: 5px;
-        }
-        
-        .progress-circle-fill {
-            fill: none;
-            stroke: var(--primary-color);
-            stroke-width: 5px;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.3s linear;
-        }
-        
-        .timer-display {
-            font-size: 72px;
-            font-weight: 300;
-            color: #f0f0f0;
-            margin: 20px 0;
-            font-variant-numeric: tabular-nums;
-            height: 80px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .cancel-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            font-size: 28px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 12px 24px;
-            border-radius: 30px;
-            margin-top: 10px;
-        }
-        
-        /* Zustände */
-        .timer-active .selection-view {
-            transform: translateX(-100%);
-        }
-        
-        .timer-active .timer-view {
-            transform: translateX(0);
-        }
-
-        /* 3D-Ansicht Karte - Dark Mode */
-        .instruction-card {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(30, 30, 30, 0.95);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            text-align: center;
-            z-index: 100;
-            transition: all 0.3s ease;
-            color: #f0f0f0;
-            border: 1px solid #444;
-        }
-        
-        .btn { 
-            padding: 1rem 2rem; 
-            background: #00d1c1; 
-            color: #121212; 
-            border: none; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: 500; 
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 209, 193, 0.3);
-        }
-        
-        .btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 20px rgba(0, 209, 193, 0.4);
-        }
-
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding-top: 80px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #121212 0%, #121212 100%);
-        }
-
-        .hero-content{
-            transform: translate(100%, -50%);
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-65%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            filter: blur(0px);
-        }
-
-        .hero-content {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            padding: 2rem;
-            background: rgba(30, 30, 30, 0.85);
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            border: 1px solid #444;
-        }
-
-        .product-title {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            color: #f0f0f0;
-        }
-
-        .product-description {
-            font-size: 1.25rem;
-            color: #ccc;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-
-        .section {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            color: #f0f0f0;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            padding: 2rem;
-            background: #1e1e1e;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            color: #f0f0f0;
-            border: 1px solid #333;
-            transition: transform 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: #00d1c1;
-        }
-
-        .model-container {
-            max-width: 800px;
-            height: 600px;
-            margin: 2rem auto;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 209, 193, 0.3);
-            border: 2px solid #333;
-            overflow: hidden;
-            position: relative;
-            background: #1a1a1a;
-        }
-
-        #main-canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        .product-page {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .product-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
-        }
-
-        .main-product-image {
-            width: 100%;
-            height: 500px;
-            object-fit: contain;
-            border-radius: 16px;
-            background: #1e1e1e;
-            padding: 1rem;
-            border: 1px solid #333;
-        }
-
-        .thumbnail-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-
-        .thumbnail {
-            width: 100%;
-            height: 100px;
-            object-fit: contain;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            border: 2px solid transparent;
-            background: #1e1e1e;
-            border-radius: 8px;
-        }
-
-        .thumbnail:hover {
-            transform: scale(1.05);
-            border-color: #00d1c1;
-        }
-
-        .thumbnail.active {
-            border-color: #00d1c1;
-        }
-
-        .product-specs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
-        }
-
-        .spec-card {
-            padding: 2rem;
-            background: #1e1e1e;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            color: #f0f0f0;
-            border: 1px solid #333;
-        }
-
-        .review-section {
-            margin: 4rem 0;
-        }
-
-        .review-card {
-            margin-left: 400px;
-            margin-right: 400px;
-            padding: 2rem;
-            background: #1e1e1e;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            color: #f0f0f0;
-            border: 1px solid #333;
-        }
-
-        .rating {
-            color: #ffd700;
-            margin-bottom: 1rem;
-        }
-
-        .price-section {
-            text-align: center;
-            padding: 4rem 0;
-            background: #1a2a3a;
-            border-radius: 16px;
-            margin: 4rem 0;
-            border: 1px solid #00d1c1;
-        }
-
-        .price {
-            font-size: 3rem;
-            color: #00d1c1;
-            margin: 1rem 0;
-        }
-        
-        /* Demo Button */
-        .demo-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            background: #00d1c1;
-            color: #121212;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 209, 193, 0.3);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        
-        .demo-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(0, 209, 193, 0.4);
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1500;
-            display: none;
-        }
-        
-        .overlay.active {
-            display: block;
-        }
-        
         :root {
             --primary-color: #00d1c1;
-            --dark-color: #f0f0f0;
-            --light-color: #121212;
+            --background-color: #000000;
+            --surface-color: #1c1c1e;
+            --text-color: #f5f5f7;
+            --text-color-secondary: #a1a1a6;
+            --border-color: #424245;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--background-color); color: var(--text-color); font-family: var(--font-family); overflow-x: hidden; }
+
+        .container { max-width: 980px; margin: 0 auto; padding: 0 2rem; }
+        .header { position: fixed; top: 0; width: 100%; background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(20px); z-index: 1000; }
+        .nav { display: flex; justify-content: space-between; align-items: center; height: 48px; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+        .nav-link { color: var(--text-color-secondary); text-decoration: none; font-size: 14px; transition: color 0.3s ease; }
+        .nav-link:hover, .nav-link.logo { color: var(--text-color); }
+        .logo { font-weight: 600; font-size: 18px; }
         
-        /* Contact Form */
-        form.feature-card {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 2rem;
+        .btn { padding: 12px 24px; background: var(--primary-color); color: #000; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: transform 0.3s ease, filter 0.3s ease; text-decoration: none; }
+        .btn:hover { filter: brightness(1.1); transform: scale(1.05); }
+        .btn.secondary { background: var(--surface-color); color: var(--text-color); border: 1px solid var(--border-color); }
+        .btn.secondary:hover { background: var(--border-color); }
+        .btn:disabled { background: #555; color: #999; cursor: not-allowed; transform: none; filter: none; }
+
+        /* --- WIEDERHERGESTELLT: 3D Canvas & Scroll Story --- */
+        .canvas-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none; /* Make sure we can click through */
         }
+        #main-3d-canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 0; 
+        }
+        #mask-3d-canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; /* Above visual, below text */
+        }
+
+        .scroll-section-container { 
+            position: relative; 
+            width: 100%; 
+            height: 300vh; 
+            z-index: 2; /* Ensures text is above canvas */
+        }
+        .story-content { 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            position: sticky; 
+            top: 0; 
+            opacity: 0; 
+            transform: translateY(20px); 
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            color: #00d1c1;
+            mix-blend-mode: difference; /* Critical for the text inversion effect */
+        }
+        .story-content.visible { opacity: 1; transform: translateY(0); }
+        .story-text h1 { font-size: 5rem; font-weight: 700; max-width: 800px; line-height: 1.1; letter-spacing: -0.02em; }
+        .story-text h2 { font-size: 3rem; font-weight: 600; margin-top: 1rem; letter-spacing: -0.01em; }
         
-        form input, form textarea {
+        /* --- Post-Scroll Content Sections --- */
+        .content-area { background-color: var(--background-color); position: relative; z-index: 5; }
+        .section { padding: 120px 0; }
+        .section-title { font-size: 4rem; text-align: center; font-weight: 700; margin-bottom: 4rem; letter-spacing: -0.02em; }
+        .section-subtitle { font-size: 1.5rem; text-align: center; color: var(--text-color-secondary); max-width: 600px; margin: -2rem auto 4rem; line-height: 1.5; }
+
+        /* --- Expanding Features Grid --- */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .feature-item { text-align: center; background: var(--surface-color); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color); transition: transform 0.4s ease, box-shadow 0.4s ease; }
+        .feature-item:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .feature-item i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1.5rem; }
+        .feature-item h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .feature-item .feature-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .feature-item:hover .feature-details { max-height: 200px; }
+        .feature-item .feature-short-desc { color: var(--text-color-secondary); line-height: 1.6; }
+        .feature-item .feature-details p { color: var(--text-color); line-height: 1.6; margin-top: 1rem; }
+        
+        /* --- Integrated UI Demo Section --- */
+        .ui-demo-outer-container { background: var(--surface-color); border-radius: 30px; padding: 2rem; border: 1px solid var(--border-color); }
+        .toaster-app { width: 100%; max-width: 800px; margin: auto; height: 400px; background: #111; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .selection-view, .timer-view { width: 100%; height: 100%; position: absolute; transition: transform 0.6s cubic-bezier(0.86, 0, 0.07, 1); }
+        .slider-container { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; }
+        .slider { display: flex; height: 100%; transition: transform 0.5s ease; align-items: center; }
+        .slide { min-width: 100%; display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column; gap: 1rem; padding: 0 1rem; }
+        .toast-img { height: 180px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); margin: auto; }
+        .slide-title { font-size: 1.2rem; font-weight: 500; text-align: center; }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: rgba(40, 40, 40, 0.8); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 1px solid #444; z-index: 10; transition: background-color 0.2s; }
+        .nav-btn:hover { background: rgba(60, 60, 60, 0.9); }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+        .arrow { width: 12px; height: 12px; border-top: 3px solid #fff; border-right: 3px solid #fff; }
+        .prev-btn .arrow { transform: rotate(-135deg); }
+        .next-btn .arrow { transform: rotate(45deg); }
+        .browning-indicator { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #444; transition: all 0.3s; }
+        .dot.active { background: var(--primary-color); }
+        .start-btn { position: absolute; bottom: 30px; right: 30px; width: 70px; height: 70px; background: var(--primary-color); border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0, 209, 193, 0.2); transition: transform 0.3s ease; z-index: 10; }
+        .start-btn:hover { transform: scale(1.1); }
+        .start-btn i { color: #000; font-size: 1.5rem; margin-left: 3px; }
+        .timer-view { transform: translateX(100%); display:flex; flex-direction:column; justify-content:center; align-items:center; }
+        .progress-ring { width: 160px; height: 160px; }
+        .progress-circle { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .progress-circle-bg { fill: none; stroke: #333; stroke-width: 8px; }
+        .progress-circle-fill { fill: none; stroke: var(--primary-color); stroke-width: 8px; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+        .timer-display { font-size: 3rem; font-weight: 500; color: var(--text-color); margin-top: 2rem; }
+        .cancel-btn { background: none; border: 2px solid var(--text-color-secondary); color: var(--text-color-secondary); font-size: 1rem; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 30px; margin-top: 2rem; transition: all 0.3s; }
+        .cancel-btn:hover { background: var(--text-color-secondary); color: #000; }
+        .toaster-app.timer-active .selection-view { transform: translateX(-100%); }
+        .toaster-app.timer-active .timer-view { transform: translateX(0); }
+
+        /* --- Gallery Section --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .gallery-item {
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+        }
+        .gallery-item img {
             width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.8rem;
-            background: #1e1e1e;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: #f0f0f0;
-            font-size: 1rem;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
         }
-        
-        form input::placeholder, form textarea::placeholder {
-            color: #888;
+        .gallery-item:hover img {
+            transform: scale(1.1);
         }
-        
-        form input:focus, form textarea:focus {
-            outline: none;
-            border-color: #00d1c1;
-            box-shadow: 0 0 0 2px rgba(0, 209, 193, 0.2);
+
+        /* --- Reviews Section --- */
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; align-items: stretch; }
+        .review-card { 
+            background: var(--surface-color); 
+            border: 1px solid var(--border-color); 
+            border-radius: 20px; 
+            padding: 2rem;
+            display: flex; /* Flexbox for vertical alignment */
+            flex-direction: column; /* Stack items vertically */
         }
-        
-        /* Toggle Button */
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 2rem;
-            background: #333;
-            color: #f0f0f0;
-            border: none;
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            z-index: 1100;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .review-stars { color: #f39c12; margin-bottom: 1.5rem; }
+        .review-stars i { font-size: 1.2rem; }
+        .review-text { 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            color: var(--text-color); 
+            font-style: italic;
+            flex-grow: 1; /* Allow text to grow and push author down */
         }
-        
-        .theme-toggle i {
-            font-size: 1.2rem;
-        }
-        
-        /* Responsive */
+        .review-author { margin-top: 1.5rem; font-weight: 600; color: var(--primary-color); }
+        .review-author span { display: block; font-weight: 400; color: var(--text-color-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
+
+        /* --- Final CTA & Footer --- */
+        .final-cta { text-align: center; background: var(--surface-color); padding: 80px 2rem; border-radius: 30px; border: 1px solid var(--border-color); }
+        .footer { padding: 4rem 2rem; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-color-secondary); font-size: 14px; }
+        .footer .nav-links { justify-content: center; margin-bottom: 1rem; }
+
+        /* --- Cart & Modal Styles --- */
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-badge { position: absolute; top: -5px; right: -12px; background-color: var(--primary-color); color: #000; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; transform: scale(0); transition: transform 0.2s ease; }
+        .cart-badge.active { transform: scale(1); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.4s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .cart-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 600px; background: var(--surface-color); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); z-index: 2001; opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .modal-overlay.active .cart-modal { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 1.5rem; }
+        .modal-close-btn { background:none; border:none; color:var(--text-color); font-size: 2rem; cursor:pointer; line-height: 1; }
+        .modal-body { padding: 2rem; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; background-color: rgba(0,0,0,0.2); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;}
+        .modal-view { display: none; }
+        .modal-view.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Cart & Checkout Form Styles --- */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-color-secondary); font-size: 0.9rem;}
+        .form-group input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); font-size: 1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 209, 193, 0.2); }
+        .payment-options { display: flex; flex-direction: column; gap: 1rem; }
+        .payment-option { padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; }
+        .payment-option.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 209, 193, 0.2); }
+        #creditCardForm { display: none; margin-top: 1.5rem; }
+        .cart-item { display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem; }
+        .cart-item-img { width:60px; height:60px; border-radius:8px; object-fit:cover; background:#333; }
+        .cart-item-details { flex-grow:1; }
+        .cart-item-details h4 { margin:0; font-size: 1rem; }
+        .cart-item-details p { color:var(--text-color-secondary); margin:0.25rem 0 0; }
+        .cart-item-quantity { display:flex; align-items:center; gap:0.75rem; }
+        .quantity-btn { background:#444; border:none; color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size: 1rem; }
+        .cart-total { text-align:right; font-size:1.2rem; margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1rem; }
+        #order-summary p { margin-bottom: 0.75rem; line-height: 1.6; }
+        #order-summary strong { color: var(--text-color-secondary); }
+
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
-            .sale-section {
-                flex-direction: column;
-                padding: 2rem;
-            }
-            
-            .sale-main-image {
-                width: 300px;
-                height: 300px;
-            }
-            
-            .hero-content {
-                transform: none;
-                margin: 0 1rem;
-            }
-            
-            .review-card {
-                margin-left: 1rem;
-                margin-right: 1rem;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .cart-overlay {
-                max-width: 100%;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header {
-                padding: 0.8rem 1rem;
-            }
-            
-            .nav-links {
-                gap: 1rem;
-            }
-            
-            .sale-main-image {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .sale-gallery img {
-                width: 70px;
-                height: 70px;
-            }
+            .nav-links { gap: 1rem; }
+            .nav-link:not(.logo):not(.btn) { display: none; }
+            .cart-icon { display: block; }
+            .story-text h1 { font-size: 2.5rem; }
+            .story-text h2 { font-size: 1.5rem; }
+            .section-title { font-size: 2.5rem; }
+            .section-subtitle { font-size: 1.2rem; }
+            .features-grid, .reviews-grid, .gallery-grid { grid-template-columns: 1fr; }
+            .ui-demo-outer-container { padding: 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    
+    <!-- WIEDERHERGESTELLT: 3D Canvas Container -->
+    <div class="canvas-container">
+        <canvas id="main-3d-canvas"></canvas>
+        <canvas id="mask-3d-canvas"></canvas>
+    </div>
+
     <header class="header">
-        <div class="logo-container">
-            <div class="logo-placeholder">CT</div>
-            <a href="#" class="nav-link">ClearToast</a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#features" class="nav-link">Funktionen</a></li>
-            <li><a href="#experience" class="nav-link">3D-Ansicht</a></li>
-            <li><a href="#contact" class="nav-link">Kontakt</a></li>
-        </ul>
-        <div class="cart-icon" id="cartIcon">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count" id="cartCount">0</span>
-        </div>
+        <nav class="nav container">
+            <a href="#" class="nav-link logo">ClearToast Pro</a>
+            <ul class="nav-links">
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#gallery" class="nav-link">Galerie</a></li>
+                <li><a href="#reviews" class="nav-link">Bewertungen</a></li>
+                <li><a href="#buy" class="nav-link btn">Kaufen</a></li>
+                <li>
+                    <div class="cart-icon" id="cartIcon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
     </header>
-
-    <div class="cart-overlay" id="cartOverlay">
-        <div class="cart-header">
-            <h2>Ihr Warenkorb</h2>
-            <button class="close-cart" id="closeCart">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items will be added dynamically -->
-        </div>
-        <div class="cart-total">
-            <span>Gesamt:</span>
-            <span id="cartTotalPrice">€0.00</span>
-        </div>
-        <div class="cart-actions">
-            <button class="checkout-btn" id="checkoutBtn">Zur Kasse gehen</button>
-            <button class="continue-btn" id="continueBtn">Weiter einkaufen</button>
-        </div>
-    </div>
     
-    <div class="checkout-container" id="checkoutContainer">
-        <div class="checkout-steps">
-            <div class="checkout-step active" data-step="1">Versand</div>
-            <div class="checkout-step" data-step="2">Zahlung</div>
-            <div class="checkout-step" data-step="3">Bestätigung</div>
+    <!-- WIEDERHERGESTELLT: Scroll-Container für 3D-Animation -->
+    <div class="scroll-section-container">
+        <div id="story-1" class="story-content">
+            <div class="story-text"><h1>Das ist ClearToast.</h1><h2>Toast, neu gedacht.</h2></div>
         </div>
-        
-        <div class="step-content" id="step1">
-            <div class="form-group">
-                <label class="form-label">Vollständiger Name</label>
-                <input type="text" class="form-input" placeholder="Max Mustermann">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">E-Mail</label>
-                <input type="email" class="form-input" placeholder="max@mustermann.de">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Adresse</label>
-                <input type="text" class="form-input" placeholder="Straße und Hausnummer">
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Postleitzahl</label>
-                    <input type="text" class="form-input" placeholder="PLZ">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Stadt</label>
-                    <input type="text" class="form-input" placeholder="Stadt">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Land</label>
-                <input type="text" class="form-input" placeholder="Land">
-            </div>
+        <div id="story-2" class="story-content">
+             <div class="story-text"><h1>Vollkommene Transparenz.</h1><h2>Jedes Detail, perfektioniert.</h2></div>
         </div>
-        
-        <div class="step-content" id="step2" style="display: none;">
-            <h3>Zahlungsmethode wählen</h3>
-            
-            <div class="payment-methods">
-                <div class="payment-method" data-method="paypal">
-                    <div class="payment-icon"><i class="fab fa-paypal"></i></div>
-                    <div>PayPal</div>
-                </div>
-                
-                <div class="payment-method" data-method="credit">
-                    <div class="payment-icon"><i class="far fa-credit-card"></i></div>
-                    <div>Kreditkarte</div>
-                </div>
-                
-                <div class="payment-method" data-method="bank">
-                    <div class="payment-icon"><i class="fas fa-university"></i></div>
-                    <div>Überweisung</div>
-                </div>
-            </div>
-            
-            <div id="creditCardForm" style="display: none; margin-top: 2rem;">
-                <div class="form-group">
-                    <label class="form-label">Kartennummer</label>
-                    <input type="text" class="form-input" placeholder="1234 5678 9012 3456">
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Ablaufdatum</label>
-                        <input type="text" class="form-input" placeholder="MM/JJ">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">CVV</label>
-                        <input type="text" class="form-input" placeholder="123">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="step-content" id="step3" style="display: none;">
-            <div class="confirmation-container">
-                <div class="confirmation-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h2>Vielen Dank für Ihre Bestellung!</h2>
-                <p>Ihre Bestellung #CT2023-456 wurde erfolgreich aufgegeben.</p>
-                <p>Sie erhalten in Kürze eine Bestätigungs-E-Mail.</p>
-                <button class="btn" style="margin-top: 2rem;" id="backToHome">Zurück zur Startseite</button>
-            </div>
-        </div>
-        
-        <div class="checkout-navigation">
-            <button class="nav-btn" id="prevStep">Zurück</button>
-            <button class="nav-btn primary" id="nextStep">Weiter</button>
+        <div id="story-3" class="story-content">
+             <div class="story-text"><h1>Intelligenz, die man schmeckt.</h1><h2>Für Ihren perfekten Morgen.</h2></div>
         </div>
     </div>
 
-    <button class="demo-btn" id="demoBtn">UI Demo starten</button>
-    
-    <div class="overlay" id="overlay"></div>
-    
-    <div class="os-window" id="osWindow">
-        <div class="os-titlebar">
-            <div class="os-title">ClearToast UI Demo</div>
-            <div class="os-controls">
-                <button class="os-btn minimize"></button>
-                <button class="os-btn maximize"></button>
-                <button class="os-btn close" id="closeWindow"></button>
+    <div class="content-area">
+        <section id="features" class="section container">
+            <h2 class="section-title">Technologie für den perfekten Biss.</h2>
+            <p class="section-subtitle">Wir haben jede Komponente neu durchdacht, damit Sie nicht mehr über Ihren Toast nachdenken müssen.</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-microchip"></i><h3>toAIst Chip</h3>
+                    <p class="feature-short-desc">Unsere KI sorgt für das perfekte Ergebnis.</p>
+                    <div class="feature-details"><p>Analysiert Brotsorte und Feuchtigkeit für einen Bräunungsgrad, der exakt Ihren Wünschen entspricht.</p></div>
+                </div>
+                <div class="feature-item">
+                     <i class="fas fa-eye"></i><h3>doubleView</h3>
+                     <p class="feature-short-desc">Behalten Sie alles im Blick.</p>
+                     <div class="feature-details"><p>Die Doppelglas-Konstruktion ermöglicht volle Kontrolle und schützt zugleich vor Verbrennungen.</p></div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i><h3>thermoGlass</h3>
+                    <p class="feature-short-desc">Maximale Sicherheit und Langlebigkeit.</p>
+                    <div class="feature-details"><p>Doppelwandiges Borosilikatglas bietet höchste Hitzebeständigkeit und eine faszinierende Sicht.</p></div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-mobile-alt"></i><h3>smartControl</h3>
+                    <p class="feature-short-desc">Bequeme Steuerung per App.</p>
+                    <div class="feature-details"><p>Starten und steuern Sie Ihren Toaster von überall mit unserer intuitiven App für iOS und Android.</p></div>
+                </div>
+                 <div class="feature-item">
+                    <i class="fas fa-bolt"></i><h3>safety+</h3>
+                     <p class="feature-short-desc">Intelligenter Schutzmechanismus.</p>
+                     <div class="feature-details"><p>Ein patentierter Überhitzungsschutz mit automatischer Abschaltung sorgt für maximale Sicherheit.</p></div>
+                 </div>
+                 <div class="feature-item">
+                    <i class="fas fa-gem"></i><h3>modern+</h3>
+                     <p class="feature-short-desc">Ein Design-Highlight für Ihre Küche.</p>
+                     <div class="feature-details"><p>Edles Glas, klare Linien und ein großes Touch-Display machen den Toaster zum Blickfang.</p></div>
+                 </div>
             </div>
-        </div>
-        <div class="os-content">
-            <div class="toaster-demo-container">
-                <div class="toaster-app" id="app">
-                    <!-- Auswahlansicht -->
+        </section>
+
+        <section id="ui-demo" class="section container">
+            <h2 class="section-title">Einfachheit auf Knopfdruck.</h2>
+            <div class="ui-demo-outer-container">
+                <div class="toaster-app" id="toasterApp">
                     <div class="selection-view">
                         <div class="slider-container">
-                            <div class="slider" id="slider">
-                                <div class="slide">
-                                    <img src="/assets/heat.png" alt="Wärmen" class="toast-img">
-                                </div>
-                                <div class="slide">
-                                    <img src="/assets/lightesttoast.png" alt="Leicht gebräunt" class="toast-img">
-                                </div>
-                                <div class="slide">
-                                    <img src="/assets/lighttoast.png" alt="Mittel gebräunt" class="toast-img">
-                                </div>
-                                <div class="slide">
-                                    <img src="/assets/toastmedium.webp" alt="Stark gebräunt" class="toast-img">
-                                </div>
-                                <div class="slide">
-                                    <img src="/assets/strongtoast.png" alt="Dunkel gebräunt" class="toast-img">
-                                </div>
-                            </div>
-                            
-                            <button class="nav-btn prev-btn" id="prevBtn">
-                                <div class="arrow"></div>
-                            </button>
-                            <button class="nav-btn next-btn" id="nextBtn">
-                                <div class="arrow"></div>
-                            </button>
-                            
-                            <div class="browning-indicator" id="indicator">
-                                <div class="dot active"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
+                            <div class="slider" id="demoSlider">
+                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Heat" class="toast-img" alt="Aufwärmen"><h3 class="slide-title">Aufwärmen</h3></div>
+                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Light" class="toast-img" alt="Sehr Leicht"><h3 class="slide-title">Sehr Leicht</h3></div>
+                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Medium" class="toast-img" alt="Leicht"><h3 class="slide-title">Leicht</h3></div>
+                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Strong" class="toast-img" alt="Mittel"><h3 class="slide-title">Mittel</h3></div>
+                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Dark" class="toast-img" alt="Stark"><h3 class="slide-title">Stark</h3></div>
                             </div>
                         </div>
-                        
-                        <button class="start-btn" id="startBtn">
-                            <div class="start-icon"></div>
-                        </button>
+                        <button class="nav-btn prev-btn" id="demoPrevBtn"><div class="arrow"></div></button>
+                        <button class="nav-btn next-btn" id="demoNextBtn"><div class="arrow"></div></button>
+                        <div class="browning-indicator" id="demoIndicator"></div>
+                        <button class="start-btn" id="demoStartBtn"><i class="fas fa-play"></i></button>
                     </div>
-                    
-                    <!-- Timeransicht -->
-                    <div class="timer-view" id="timerView">
-                        <div class="progress-container">
-                            <div class="progress-ring">
-                                <svg class="progress-circle" viewBox="0 0 36 36" preserveAspectRatio="xMidYMid meet">
-                                    <path class="progress-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path class="progress-circle-fill" id="progressPath" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                </svg>
-                            </div>
+                    <div class="timer-view">
+                        <div class="progress-ring">
+                            <svg class="progress-circle" viewBox="0 0 36 36">
+                                <path class="progress-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="progress-circle-fill" id="progressPath" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
                         </div>
-                        <div class="timer-display" id="timerDisplay">0:15</div>
+                        <div class="timer-display" id="timerDisplay">0:30</div>
                         <button class="cancel-btn" id="cancelBtn">Abbrechen</button>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <section id="gallery" class="section container">
+             <h2 class="section-title">Passt in jede Küche.</h2>
+             <p class="section-subtitle">Klares Design, das sich nahtlos in moderne und klassische Umgebungen einfügt.</p>
+             <div class="gallery-grid">
+                 <div class="gallery-item"><img src="https://images.unsplash.com/photo-1588895087224-117511d4e3d3?q=80&w=2574&auto=format&fit=crop" alt="Toaster in einer modernen Küche"></div>
+                 <div class="gallery-item"><img src="https://i.imgur.com/sC5252b.png" alt="Nahaufnahme des Toasters"></div>
+                 <div class="gallery-item"><img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=2670&auto=format&fit=crop" alt="Toaster auf einer Küchentheke mit Frühstück"></div>
+                 <div class="gallery-item"><img src="https://i.imgur.com/L7E192y.png" alt="Toaster von der Seite"></div>
+                 <div class="gallery-item"><img src="https://placehold.co/600x600/111111/f5f5f7?text=Detail+1" alt="Detailaufnahme 1"></div>
+                 <div class="gallery-item"><img src="https://placehold.co/600x600/1c1c1e/f5f5f7?text=Detail+2" alt="Detailaufnahme 2"></div>
+             </div>
+        </section>
+
+        <section id="reviews" class="section container">
+            <h2 class="section-title">Was unsere Kunden sagen.</h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="review-text">"Endlich kein verbrannter Toast mehr! Sieht super edel aus und funktioniert tadellos. Jeden Cent wert."</p>
+                    <p class="review-author">Julia K.<span>Verifizierter Kauf</span></p>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="review-text">"Das Design ist einfach der Wahnsinn. Alle unsere Gäste fragen, woher wir diesen Toaster haben. Die App-Steuerung ist ein nettes Extra. Sehr empfehlenswert für alle, die Wert auf Ästhetik und Funktion legen."</p>
+                    <p class="review-author">Markus B.<span>Verifizierter Kauf</span></p>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <p class="review-text">"Sehr guter Toaster. Das Glas wird außen nicht heiß, was super ist mit Kindern. Ein bisschen teuer, aber die Qualität stimmt."</p>
+                    <p class="review-author">Sandra L.<span>Verifizierter Kauf</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="buy" class="section container">
+            <div class="final-cta">
+                <h2 class="section-title">ClearToast Pro</h2>
+                <p class="section-subtitle" style="font-size: 2rem; color: var(--text-color); margin-top: -3rem;">€249,00</p>
+                <p class="section-subtitle">Inkl. MwSt., zzgl. Versand. Sofort lieferbar.</p>
+                <button class="btn add-to-cart-btn" style="font-size: 1.2rem; padding: 18px 36px;">In den Warenkorb</button>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <div class="container">
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link">Datenschutz</a></li>
+                    <li><a href="#" class="nav-link">Impressum</a></li>
+                    <li><a href="#" class="nav-link">Kontakt</a></li>
+                </ul>
+                <p>&copy; 2025 ClearToast Inc. Alle Rechte vorbehalten.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="cart-modal" id="cartModal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Warenkorb</h2>
+                <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="view-cart" class="modal-view active">
+                    <div id="cart-items-container">
+                        <p style="text-align:center; color: var(--text-color-secondary);">Ihr Warenkorb ist leer.</p>
+                    </div>
+                    <div id="cart-total-container"></div>
+                </div>
+
+                <form id="shipping-form">
+                    <div id="view-shipping" class="modal-view">
+                        <div class="form-grid">
+                            <div class="form-group"><label for="firstname">Vorname</label><input type="text" id="firstname" name="firstname" required></div>
+                            <div class="form-group"><label for="lastname">Nachname</label><input type="text" id="lastname" name="lastname" required></div>
+                            <div class="form-group full-width"><label for="address">Straße & Hausnummer</label><input type="text" id="address" name="address" required></div>
+                            <div class="form-group"><label for="zip">PLZ</label><input type="text" id="zip" name="zip" required></div>
+                            <div class="form-group"><label for="city">Stadt</label><input type="text" id="city" name="city" required></div>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="view-payment" class="modal-view">
+                    <div class="payment-options">
+                        <div class="payment-option" data-value="credit-card">
+                            <i class="far fa-credit-card"></i> Kreditkarte
+                        </div>
+                        <div class="payment-option" data-value="paypal">
+                            <i class="fab fa-paypal"></i> PayPal
+                        </div>
+                    </div>
+                    <form id="creditCardForm">
+                        <div class="form-grid">
+                            <div class="form-group full-width"><label for="card-name">Name auf der Karte</label><input type="text" id="card-name" required></div>
+                            <div class="form-group full-width"><label for="card-number">Kartennummer</label><input type="text" id="card-number" placeholder="•••• •••• •••• ••••" required></div>
+                            <div class="form-group"><label for="card-expiry">Gültig bis</label><input type="text" id="card-expiry" placeholder="MM/YY" required></div>
+                            <div class="form-group"><label for="card-cvc">CVC</label><input type="text" id="card-cvc" placeholder="123" required></div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="view-confirm" class="modal-view">
+                    <div id="order-summary">
+                        <h4>Ihre Bestellung</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalBackBtn" class="btn secondary" style="display: none;">Zurück</button>
+                <button id="modalNextBtn" class="btn">Zur Kasse</button>
+            </div>
         </div>
     </div>
 
-    <main>
-        <section class="hero">
-            <img src="/assets/rengferingdesign2.png" alt="ClearToast Pro Produktbild" class="hero-image">
-        <div class="hero-content">
-            <h1 class="product-title">ClearToast Pro</h1>
-            <p class="product-description">Der erste volltransparente Toaster mit Smart-Technologie</p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button class="btn" id="preorderBtn">Jetzt vorbestellen</button>
-                <a href="#product" class="btn">Produktdetails</a>
-            </div>
-        </div>
-    </section>
-
-        <section class="sale-section">
-            <div class="sale-main-image-container">
-                <img id="mainSaleImage" src="/assets/renderingproductbild5.png" alt="ClearToast Pro - Frontansicht" class="sale-main-image">
-                <div class="sale-gallery">
-                    <img src="/assets/renderingproductbild4.png" alt="Display" class="active" onclick="switchImage(this)">
-                    <img src="/assets/renderingproductbild3.png" alt="Hinten" onclick="switchImage(this)">
-                    <img src="/assets/renderingproductbild6.png" alt="Draufsicht" onclick="switchImage(this)">
-                    <img src="/assets/rengferingdesign2.png" alt="Beleuchtet" onclick="switchImage(this)">
-                </div>
-            </div>
-            <div class="sale-details">
-                <h2>ClearToast Pro</h2>
-                <div class="sale-rating">★★★★☆</div>
-                <div class="sale-price">€100</div>
-                <button class="sale-btn" id="addToCartBtn">In den Warenkorb</button>
-            </div>
-        </section>
-
-        <div class="review-section">
-            <h2 class="section-title">Kundenbewertungen</h2>
-            
-            <div class="review-card">
-                <div class="rating">★★★★★</div>
-                <p>"Absolut begeistert! Die Glasoptik ist noch schöner als erwartet."</p>
-                <p>- Sarah L., Hamburg</p>
-            </div>
-
-            <div class="review-card">
-                <div class="rating">★★★★☆</div>
-                <p>"Tolle Technik, etwas gewöhnungsbedürftige Bedienung."</p>
-                <p>- Markus T., Berlin</p>
-            </div>
-
-            <div class="review-card">
-                <div class="rating">★★★★★</div>
-                <p>"Bester Toaster den ich je hatte - jeden Cent wert!"</p>
-                <p>- Anna M., München</p>
-            </div>
-        </div>
-
-<section id="features" class="section">
-            <h2 class="section-title">Premium-Funktionen</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h3>thermoGlass</h3>
-                    <p>Hochwertiges, hitzebeständiges Borosilikatglas sorgt für Sicherheit und Langlebigkeit – auch bei täglicher Nutzung</p>
-                </div>
-                <div class="feature-card">
-                    <h3>doubleView</h3>
-                    <p>Durch unsere eigens entwickelte Doppelglas-Konstruktion kann man dem Toast beim Bräunen zusehen – volle Kontrolle, Schutz gegen Verbrennung und maximaler Genuss </p>
-                </div>
-                <div class="feature-card">
-                    <h3>smartControl</h3>
-                    <p>Steuere deinen Toaster bequem über die App, dein Smarthome-Gerät oder den integrierten Bildschirm – smarter Toastgenuss auf Knopfdruck</p>
-                </div>
-                <div class="feature-card">
-                    <h3>safety+</h3>
-                    <p>Mit unserem patentierten, einzigartigen Konzept „safety+“ wird jeder Toastvorgang sicher – dank intelligentem Überhitzungsschutz und Abschaltautomatik </p>
-                </div>
-                <div class="feature-card">
-                    <h3>modern+</h3>
-                    <p>Design-Highlight in der Küche. Ein Toaster der sofort ins Auge fällt: Edles Glas, klare Linien, großer Touch-Display</p>
-                </div>
-                <div class="feature-card">
-                    <h3>toAIst</h3>
-                    <p>integrierte künstliche Intelligenz. unsere jahrelang entwickelte KI analysiert jede Toastsorte und sorgt automatisch für das von ihnen gewählte Ergebnis </p>
-                </div>
-            </div>
-        </section>
-        
-        <section id="experience" class="section">
-            <h2 class="section-title">3D-Ansicht</h2>
-            <div class="model-container">
-                <div class="instruction-card">
-                    <h3>3D-Interaktion</h3>
-                    <p>Klicken & ziehen zum Drehen</p>
-                    <button class="btn" onclick="startInteraction()">Starten</button>
-                </div>
-                <canvas id="main-canvas"></canvas>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2 class="section-title">Kundenstimmen</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <p>"Der beste Toaster den ich je hatte! Die Glasfunktion ist revolutionär."</p>
-                    <p>- Anna M., Berlin</p>
-                </div>
-                <div class="feature-card">
-                    <p>"Perfekte Bräunung jedes Mal. Ein Must-Have für jede Küche!"</p>
-                    <p>- Markus T., München</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="section">
-            <h2 class="section-title">Kontakt</h2>
-            <form class="feature-card" style="max-width: 500px; margin: 0 auto;">
-                <input type="text" placeholder="Name">
-                <input type="email" placeholder="E-Mail">
-                <textarea rows="4" placeholder="Nachricht"></textarea>
-                <button type="submit" class="btn">Senden</button>
-            </form>
-        </section>
-    </main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
     
-    <script>
-        // Warenkorb-Funktionalität
-        const cartIcon = document.getElementById('cartIcon');
-        const cartOverlay = document.getElementById('cartOverlay');
-        const closeCart = document.getElementById('closeCart');
-        const cartItems = document.getElementById('cartItems');
-        const cartCount = document.getElementById('cartCount');
-        const cartTotalPrice = document.getElementById('cartTotalPrice');
-        const checkoutBtn = document.getElementById('checkoutBtn');
-        const continueBtn = document.getElementById('continueBtn');
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        const preorderBtn = document.getElementById('preorderBtn');
-        const checkoutContainer = document.getElementById('checkoutContainer');
-        const checkoutSteps = document.querySelectorAll('.checkout-step');
-        const stepContents = document.querySelectorAll('.step-content');
-        const nextStepBtn = document.getElementById('nextStep');
-        const prevStepBtn = document.getElementById('prevStep');
-        const backToHomeBtn = document.getElementById('backToHome');
-        const paymentMethods = document.querySelectorAll('.payment-method');
+    // --- WIEDERHERGESTELLT: 3D SCROLL ANIMATION ---
+    const visualCanvas = document.getElementById('main-3d-canvas');
+    const maskCanvas = document.getElementById('mask-3d-canvas');
+
+    if (visualCanvas && maskCanvas) {
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 5);
+
+        let visualModel, maskModel;
+
+        // --- Visual Scene (the pretty one) ---
+        const visualScene = new THREE.Scene();
+        const visualRenderer = new THREE.WebGLRenderer({ canvas: visualCanvas, antialias: true, alpha: true });
+        visualRenderer.setSize(window.innerWidth, window.innerHeight);
+        visualRenderer.setPixelRatio(window.devicePixelRatio);
+        visualRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+        visualRenderer.outputEncoding = THREE.sRGBEncoding;
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        visualScene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
+        directionalLight.position.set(5, 10, 7.5);
+        visualScene.add(directionalLight);
         
-        let cart = [];
-        let currentStep = 1;
-        
-        // Produktdaten
-        const product = {
-            id: 1,
-            name: "ClearToast Pro",
-            price: 100,
-            image: "/assets/renderingproductbild5.png"
-        };
-        
-        // Warenkorb öffnen/schließen
-        cartIcon.addEventListener('click', () => {
-            cartOverlay.classList.add('active');
-        });
-        
-        closeCart.addEventListener('click', () => {
-            cartOverlay.classList.remove('active');
-        });
-        
-        continueBtn.addEventListener('click', () => {
-            cartOverlay.classList.remove('active');
-        });
-        
-        // Produkt zum Warenkorb hinzufügen
-        addToCartBtn.addEventListener('click', addToCart);
-        preorderBtn.addEventListener('click', addToCart);
-        
-        function addToCart() {
-            const existingItem = cart.find(item => item.id === product.id);
+        // --- Mask Scene (for text inversion) ---
+        const maskScene = new THREE.Scene();
+        const maskRenderer = new THREE.WebGLRenderer({ canvas: maskCanvas, antialias: true, alpha: true });
+        maskRenderer.setSize(window.innerWidth, window.innerHeight);
+        maskRenderer.setPixelRatio(window.devicePixelRatio);
+
+        // --- Create Procedural Toaster Model (more reliable than loading files) ---
+        function createToasterModel() {
+            const group = new THREE.Group();
             
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    ...product,
-                    quantity: 1
-                });
+            // Main body
+            const bodyGeo = new THREE.BoxGeometry(2, 1.5, 1);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0xcccccc,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            group.add(body);
+            
+            // Glass panels
+            const glassMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                metalness: 0.1,
+                roughness: 0,
+                transparent: true,
+                opacity: 0.2
+            });
+            const glassGeo = new THREE.BoxGeometry(2.05, 1.55, 1.05);
+            const glass = new THREE.Mesh(glassGeo, glassMat);
+            group.add(glass);
+
+            // Slot
+            const slotGeo = new THREE.BoxGeometry(1.2, 0.2, 0.2);
+            const slotMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+            const slot = new THREE.Mesh(slotGeo, slotMat);
+            slot.position.y = 0.8;
+            group.add(slot);
+            
+            return group;
+        }
+
+        visualModel = createToasterModel();
+        visualModel.position.y = -0.5;
+        visualScene.add(visualModel);
+
+        maskModel = createToasterModel();
+        maskModel.position.y = -0.5;
+        const whiteMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        maskModel.traverse((child) => {
+            if (child.isMesh) {
+                child.material = whiteMaterial;
             }
-            
-            updateCart();
-            cartOverlay.classList.add('active');
-        }
-        
-        // Warenkorb aktualisieren
-        function updateCart() {
-            cartItems.innerHTML = '';
-            let total = 0;
-            let count = 0;
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<p>Ihr Warenkorb ist leer</p>';
-                cartTotalPrice.textContent = '€0.00';
-                cartCount.textContent = '0';
-                return;
-            }
-            
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-                count += item.quantity;
-                
-                const cartItemElement = document.createElement('div');
-                cartItemElement.classList.add('cart-item');
-                cartItemElement.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.name}</div>
-                        <div class="cart-item-price">€${item.price.toFixed(2)}</div>
-                        <div class="cart-item-actions">
-                            <button class="quantity-btn minus" data-id="${item.id}">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn plus" data-id="${item.id}">+</button>
-                            <button class="remove-btn" data-id="${item.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                cartItems.appendChild(cartItemElement);
-            });
-            
-            cartTotalPrice.textContent = `€${total.toFixed(2)}`;
-            cartCount.textContent = count;
-            
-            // Event-Listener für Buttons hinzufügen
-            document.querySelectorAll('.minus').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.dataset.id);
-                    updateQuantity(id, -1);
-                });
-            });
-            
-            document.querySelectorAll('.plus').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.dataset.id);
-                    updateQuantity(id, 1);
-                });
-            });
-            
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.dataset.id);
-                    removeItem(id);
-                });
-            });
-        }
-        
-        // Menge aktualisieren
-        function updateQuantity(id, change) {
-            const item = cart.find(item => item.id === id);
-            if (item) {
-                item.quantity += change;
-                
-                if (item.quantity <= 0) {
-                    cart = cart.filter(item => item.id !== id);
-                }
-                
-                updateCart();
-            }
-        }
-        
-        // Artikel entfernen
-        function removeItem(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCart();
-        }
-        
-        // Zur Kasse gehen
-        checkoutBtn.addEventListener('click', () => {
-            cartOverlay.classList.remove('active');
-            checkoutContainer.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+        maskScene.add(maskModel);
         
-        // Checkout-Schritte
-        nextStepBtn.addEventListener('click', () => {
-            if (currentStep < 3) {
-                checkoutSteps[currentStep - 1].classList.remove('active');
-                stepContents[currentStep - 1].style.display = 'none';
-                
-                currentStep++;
-                
-                checkoutSteps[currentStep - 1].classList.add('active');
-                stepContents[currentStep - 1].style.display = 'block';
-                
-                if (currentStep === 3) {
-                    nextStepBtn.textContent = 'Bestellung abschließen';
+        const storySections = document.querySelectorAll('.story-content');
+        
+        function updateAnimation() {
+            const scrollY = window.scrollY;
+            const h = window.innerHeight;
+            if (!visualModel || !maskModel) return;
+
+            // Scroll-based animation logic
+            if (scrollY < h) {
+                const p = scrollY / h;
+                visualModel.rotation.y = p * Math.PI * 0.25;
+                camera.position.z = 5 - p * 2;
+                camera.position.x = 0;
+                camera.rotation.y = 0;
+            } else if (scrollY < h * 2) {
+                const p = (scrollY - h) / h;
+                visualModel.rotation.y = Math.PI * 0.25 + p * Math.PI * 0.5;
+                camera.position.z = 3 - p * 1.5;
+                camera.position.x = p * 1.5;
+                camera.rotation.y = p * 0.2;
+            } else if (scrollY < h * 3) {
+                const p = (scrollY - h*2) / h;
+                camera.position.z = 1.5 + p * 3.5;
+                camera.position.x = 1.5 - p * 1.5;
+                camera.rotation.y = 0.2 - p * 0.2;
+            }
+
+            // Sync mask model's rotation and position with the visual model
+            maskModel.rotation.copy(visualModel.rotation);
+            maskModel.position.copy(visualModel.position);
+
+            storySections.forEach((section, index) => {
+                const sectionTop = index * h;
+                if (scrollY > sectionTop - h * 0.7 && scrollY < sectionTop + h * 0.3) {
+                    section.classList.add('visible');
                 } else {
-                    nextStepBtn.textContent = 'Weiter';
-                }
-                
-                if (currentStep === 3) {
-                    prevStepBtn.style.display = 'none';
-                } else {
-                    prevStepBtn.style.display = 'block';
-                }
-            } else {
-                // Bestellung abschließen
-                cart = [];
-                updateCart();
-                checkoutContainer.style.display = 'none';
-                cartOverlay.classList.remove('active');
-            }
-        });
-        
-        prevStepBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                checkoutSteps[currentStep - 1].classList.remove('active');
-                stepContents[currentStep - 1].style.display = 'none';
-                
-                currentStep--;
-                
-                checkoutSteps[currentStep - 1].classList.add('active');
-                stepContents[currentStep - 1].style.display = 'block';
-                nextStepBtn.textContent = 'Weiter';
-                prevStepBtn.style.display = 'block';
-            }
-        });
-        
-        backToHomeBtn.addEventListener('click', () => {
-            checkoutContainer.style.display = 'none';
-        });
-        
-        // Zahlungsmethode auswählen
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', () => {
-                paymentMethods.forEach(m => m.classList.remove('selected'));
-                method.classList.add('selected');
-                
-                const methodType = method.dataset.method;
-                const creditCardForm = document.getElementById('creditCardForm');
-                
-                if (methodType === 'credit') {
-                    creditCardForm.style.display = 'block';
-                } else {
-                    creditCardForm.style.display = 'none';
+                    section.classList.remove('visible');
                 }
             });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            updateAnimation();
+            visualRenderer.render(visualScene, camera);
+            maskRenderer.render(maskScene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            visualRenderer.setSize(window.innerWidth, window.innerHeight);
+            maskRenderer.setSize(window.innerWidth, window.innerHeight);
         });
-        
-        // Toaster UI Demo Script
-        const demoBtn = document.getElementById('demoBtn');
-        const overlay = document.getElementById('overlay');
-        const osWindow = document.getElementById('osWindow');
-        const closeWindow = document.getElementById('closeWindow');
-        
-        // Demo Button Event
-        demoBtn.addEventListener('click', () => {
-            overlay.classList.add('active');
-            osWindow.classList.add('active');
-        });
-        
-        // Close Window Event
-        closeWindow.addEventListener('click', () => {
-            overlay.classList.remove('active');
-            osWindow.classList.remove('active');
-        });
-        
-        // Close when clicking overlay
-        overlay.addEventListener('click', () => {
-            overlay.classList.remove('active');
-            osWindow.classList.remove('active');
-        });
-        
-        // Toaster UI Functionality
-        const app = document.getElementById('app');
-        const slider = document.getElementById('slider');
-        const slides = document.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const dots = document.querySelectorAll('.dot');
-        const startBtn = document.getElementById('startBtn');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const progressPath = document.getElementById('progressPath');
-        
-        let currentIndex = 0;
-        const totalSlides = slides.length;
+    }
+
+
+    // --- TOASTER UI DEMO ---
+    const toasterApp = document.getElementById('toasterApp');
+    if (toasterApp) {
+        const demoSlider = document.getElementById('demoSlider');
+        const demoSlides = demoSlider.querySelectorAll('.slide');
+        const indicatorContainer = document.getElementById('demoIndicator');
+        let demoCurrentIndex = 0;
+        const browningTimes = [15, 25, 35, 45, 60];
         let timerInterval;
-        let remainingTime = 15;
-        const browningTimes = [5, 10, 15, 20, 25];
+
+        demoSlides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            indicatorContainer.appendChild(dot);
+        });
+        const demoDots = indicatorContainer.querySelectorAll('.dot');
         
-        // Initialisierung
-        updateSlider();
+        function updateDemoSlider() {
+            if(!demoSlider) return;
+            demoSlider.style.transform = `translateX(-${demoCurrentIndex * 100}%)`;
+            demoDots.forEach((dot, i) => dot.classList.toggle('active', i === demoCurrentIndex));
+        }
         
-        // Navigation
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-        
-        // Tastatursteuerung
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowRight':
-                    nextSlide();
-                    break;
-                case 'ArrowLeft':
-                    prevSlide();
-                    break;
-                case 'Enter':
-                    if(!app.classList.contains('timer-active')) {
-                        startToasting();
-                    }
-                    break;
-            }
+        document.getElementById('demoNextBtn').addEventListener('click', () => {
+            demoCurrentIndex = (demoCurrentIndex + 1) % demoSlides.length;
+            updateDemoSlider();
         });
         
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % totalSlides;
-            updateSlider();
-        }
-        
-        function prevSlide() {
-            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-            updateSlider();
-        }
-        
-        function updateSlider() {
-            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-        }
-        
-        // Start-Button
-        startBtn.addEventListener('click', startToasting);
-        
-        function startToasting() {
-            app.classList.add('timer-active');
-            remainingTime = browningTimes[currentIndex];
-            updateTimerDisplay();
-            
+        document.getElementById('demoPrevBtn').addEventListener('click', () => {
+            demoCurrentIndex = (demoCurrentIndex - 1 + demoSlides.length) % demoSlides.length;
+            updateDemoSlider();
+        });
+
+        document.getElementById('demoStartBtn').addEventListener('click', () => {
+            toasterApp.classList.add('timer-active');
+            let remainingTime = browningTimes[demoCurrentIndex];
             const totalTime = remainingTime;
-            progressPath.style.strokeDashoffset = 0;
+            const progressPath = document.getElementById('progressPath');
+            
+            clearInterval(timerInterval);
             
             timerInterval = setInterval(() => {
                 remainingTime--;
-                updateTimerDisplay();
-                
-                const progress = (remainingTime / totalTime) * 100;
-                progressPath.style.strokeDashoffset = progress;
+                document.getElementById('timerDisplay').textContent = `0:${remainingTime.toString().padStart(2, '0')}`;
+                const progress = ((totalTime - remainingTime) / totalTime) * 100;
+                progressPath.style.strokeDasharray = `${progress}, 100`;
                 
                 if (remainingTime <= 0) {
                     clearInterval(timerInterval);
                     setTimeout(() => {
-                        alert('Toast fertig!');
-                        cancelToasting();
+                        toasterApp.classList.remove('timer-active');
+                        progressPath.style.strokeDasharray = `0, 100`;
                     }, 500);
                 }
             }, 1000);
-        }
-        
-        // Abbrechen-Button
-        cancelBtn.addEventListener('click', cancelToasting);
-        
-        function cancelToasting() {
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', () => {
             clearInterval(timerInterval);
-            app.classList.remove('timer-active');
-            remainingTime = browningTimes[currentIndex];
-            progressPath.style.strokeDashoffset = 100;
+            toasterApp.classList.remove('timer-active');
+            document.getElementById('progressPath').style.strokeDasharray = `0, 100`;
+        });
+
+        updateDemoSlider();
+    }
+
+    // --- REALISTISCHER CHECKOUT ---
+    const cart = {
+        items: [],
+        product: { id: 1, name: 'ClearToast Pro', price: 249.00, image: 'https://placehold.co/80x80/1c1c1e/00d1c1?text=CTP' }
+    };
+    
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBackBtn = document.getElementById('modalBackBtn');
+    const modalNextBtn = document.getElementById('modalNextBtn');
+
+    let currentViewIndex = 0;
+    const viewOrder = ['view-cart', 'view-shipping', 'view-payment', 'view-confirm'];
+    
+    function openModal() {
+        currentViewIndex = 0;
+        updateCartUI();
+        updateModalState();
+        modalOverlay.classList.add('active');
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+    }
+    
+    function updateModalState() {
+        document.querySelectorAll('.modal-view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewOrder[currentViewIndex]).classList.add('active');
+        
+        modalBackBtn.style.display = currentViewIndex > 0 ? 'inline-block' : 'none';
+        
+        const titles = ['Warenkorb', 'Lieferadresse', 'Zahlungsmethode', 'Bestellung prüfen'];
+        modalTitle.textContent = titles[currentViewIndex];
+        
+        const nextLabels = ['Zur Kasse', 'Weiter zur Zahlung', 'Weiter zur Prüfung', 'Jetzt Kaufen'];
+        modalNextBtn.textContent = nextLabels[currentViewIndex];
+        
+        modalNextBtn.disabled = (currentViewIndex === 0 && cart.items.length === 0);
+        
+        if(currentViewIndex === 3) {
+            populateOrderSummary();
         }
-        
-        function updateTimerDisplay() {
-            const minutes = Math.floor(remainingTime / 60);
-            const seconds = remainingTime % 60;
-            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function handleNext() {
+        if (!validateCurrentStep()) return;
+
+        if (currentViewIndex < viewOrder.length - 1) {
+            currentViewIndex++;
+            updateModalState();
+        } else {
+            alert('Vielen Dank für Ihren Einkauf!');
+            cart.items = [];
+            closeModal();
+            updateCartUI();
         }
-        
-        // 3D-Modell Funktionen
-        // Platzhalter für 3D-Funktionalität, da GitHub Pages keine GLTF-Dateien unterstützt
-        const canvas = document.getElementById('main-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            drawPlaceholder();
+    }
+
+    function handleBack() {
+        if (currentViewIndex > 0) {
+            currentViewIndex--;
+            updateModalState();
         }
-        
-        function drawPlaceholder() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#2a2a2a';
-            ctx.beginPath();
-            ctx.arc(canvas.width/2, canvas.height/2, 100, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = '#00d1c1';
-            ctx.font = '20px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('3D Modell', canvas.width/2, canvas.height/2 - 10);
-            ctx.font = '16px sans-serif';
-            ctx.fillText('Interaktiv auf echten Servern', canvas.width/2, canvas.height/2 + 20);
+    }
+
+    function validateCurrentStep() {
+        if (currentViewIndex === 1) {
+            const form = document.getElementById('shipping-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
         }
-        
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        
-        // Globale Funktion für den Bildwechsel
-        function switchImage(el) {
-            document.querySelectorAll('.sale-gallery img').forEach(img => img.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('mainSaleImage').src = el.src;
+        if (currentViewIndex === 2) {
+             const selectedOption = document.querySelector('.payment-option.selected');
+             if (!selectedOption) {
+                 alert('Bitte wählen Sie eine Zahlungsmethode.');
+                 return false;
+             }
+             if (selectedOption.dataset.value === 'credit-card') {
+                 const form = document.getElementById('creditCardForm');
+                 if (!form.checkValidity()) {
+                     form.reportValidity();
+                     return false;
+                 }
+             }
         }
+        return true;
+    }
+
+    function populateOrderSummary() {
+        const summaryContainer = document.getElementById('order-summary');
+        const shippingForm = new FormData(document.getElementById('shipping-form'));
+        const paymentMethod = document.querySelector('.payment-option.selected')?.dataset.value;
+        const totalCost = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
-        // Funktion für 3D-Interaktionskarte
-        function startInteraction() {
-            const card = document.querySelector('.instruction-card');
-            if (card) card.style.display = 'none';
+        let paymentText = 'Nicht angegeben';
+        if (paymentMethod === 'credit-card') paymentText = 'Kreditkarte';
+        if (paymentMethod === 'paypal') paymentText = 'PayPal';
+
+        summaryContainer.innerHTML = `
+            <p><strong>Lieferung an:</strong><br>${shippingForm.get('firstname')} ${shippingForm.get('lastname')}<br>${shippingForm.get('address')}<br>${shippingForm.get('zip')} ${shippingForm.get('city')}</p>
+            <p><strong>Zahlungsmethode:</strong><br>${paymentText}</p>
+            <p><strong>Gesamtsumme:</strong><br><strong>€${totalCost.toFixed(2)}</strong></p>
+            <hr style="border-color: var(--border-color); margin: 1rem 0;">
+            <p style="font-size:0.8rem; color:var(--text-color-secondary);">Mit Klick auf "Jetzt kaufen" schließen Sie die Bestellung ab.</p>
+        `;
+    }
+
+    function updateCartUI() {
+        const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        const cartBadge = document.getElementById('cartBadge');
+        cartBadge.classList.toggle('active', totalItems > 0);
+        cartBadge.textContent = totalItems;
+        
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalContainer = document.getElementById('cart-total-container');
+        if (!cartItemsContainer) return;
+        
+        cartItemsContainer.innerHTML = '';
+        cartTotalContainer.innerHTML = '';
+        
+        if (cart.items.length === 0) {
+            cartItemsContainer.innerHTML = '<p style="text-align:center; color: var(--text-color-secondary);">Ihr Warenkorb ist leer.</p>';
+        } else {
+            let totalCost = 0;
+            cart.items.forEach(item => {
+                totalCost += item.price * item.quantity;
+                const itemEl = document.createElement('div');
+                itemEl.className = 'cart-item';
+                itemEl.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <p>€${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn" data-id="${item.id}" data-change="-1">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" data-id="${item.id}" data-change="1">+</button>
+                    </div>`;
+                cartItemsContainer.appendChild(itemEl);
+            });
+            cartTotalContainer.innerHTML = `<div class="cart-total"><strong>Gesamt:</strong> <span>€${totalCost.toFixed(2)}</span></div>`;
+            cartItemsContainer.querySelectorAll('.quantity-btn').forEach(btn => btn.addEventListener('click', changeQuantity));
         }
-    </script>
+        if(modalOverlay.classList.contains('active')) updateModalState();
+    }
+    
+    function changeQuantity(e) {
+        const id = parseInt(e.target.dataset.id);
+        const change = parseInt(e.target.dataset.change);
+        const item = cart.items.find(i => i.id === id);
+        if (item) {
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                cart.items = cart.items.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        }
+    }
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => btn.addEventListener('click', () => {
+        const existingItem = cart.items.find(item => item.id === cart.product.id);
+        if (existingItem) { 
+            existingItem.quantity++; 
+        } else { 
+            cart.items.push({ ...cart.product, quantity: 1 }); 
+        }
+        openModal();
+    }));
+    
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            const selectedOption = e.currentTarget;
+            selectedOption.classList.add('selected');
+            document.getElementById('creditCardForm').style.display = selectedOption.dataset.value === 'credit-card' ? 'block' : 'none';
+        });
+    });
+
+    document.getElementById('cartIcon').addEventListener('click', openModal);
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if(e.target === modalOverlay) closeModal(); });
+    modalNextBtn.addEventListener('click', handleNext);
+    modalBackBtn.addEventListener('click', handleBack);
+});
+</script>
+
 </body>
 </html>
