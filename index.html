@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClearToast Pro - Die Revolution des Toastens</title>
-    <!-- Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     
     <style>
@@ -22,7 +22,27 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { background: var(--background-color); color: var(--text-color); font-family: var(--font-family); overflow-x: hidden; }
+        /* Stil für den Container über seine ID */
+        /* 1. Der unsichtbare Wrapper, der nur zentriert */
+        .modern-image-wrapper {
+        display: flex;
+        justify-content: center; /* Zentriert das Bild horizontal */
+        padding: 20px; /* Optional: Gibt dem Schatten Platz zum "Atmen" */
+        }
 
+        /* 2. Der moderne Stil für das Bild selbst */
+        .rounded-shadow-image {
+        /* Größe anpassen */
+        width: 60%;
+        max-width: 1550px; /* Maximale Größe für große Bildschirme */
+        height: auto; /* Seitenverhältnis beibehalten */
+
+        /* Der "moderne Rand" */
+        border-radius: 25px; /* Starke Abrundung für einen weichen Look */
+        
+        /* Der Schatten ersetzt den klassischen Rand und sorgt für Tiefe */
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12); 
+        }
         .container { max-width: 980px; margin: 0 auto; padding: 0 2rem; }
         .header { position: fixed; top: 0; width: 100%; background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(20px); z-index: 1000; }
         .nav { display: flex; justify-content: space-between; align-items: center; height: 48px; }
@@ -37,48 +57,12 @@
         .btn.secondary:hover { background: var(--border-color); }
         .btn:disabled { background: #555; color: #999; cursor: not-allowed; transform: none; filter: none; }
 
-        /* --- WIEDERHERGESTELLT: 3D Canvas & Scroll Story --- */
-        .canvas-container { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            pointer-events: none; /* Make sure we can click through */
-        }
-        #main-3d-canvas { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            z-index: 0; 
-        }
-        #mask-3d-canvas { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            z-index: 1; /* Above visual, below text */
-        }
-
-        .scroll-section-container { 
-            position: relative; 
-            width: 100%; 
-            height: 300vh; 
-            z-index: 2; /* Ensures text is above canvas */
-        }
-        .story-content { 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            text-align: center; 
-            position: sticky; 
-            top: 0; 
-            opacity: 0; 
-            transform: translateY(20px); 
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            color: #00d1c1;
-            mix-blend-mode: difference; /* Critical for the text inversion effect */
-        }
+        /* --- 3D Canvas & Scroll Story --- */
+        .canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #main-3d-canvas { position: absolute; top: 0; left: 0; z-index: 0; }
+        #mask-3d-canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+        .scroll-section-container { position: relative; width: 100%; height: 300vh; z-index: 2; }
+        .story-content { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; position: sticky; top: 0; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; color: #00d1c1; mix-blend-mode: difference; }
         .story-content.visible { opacity: 1; transform: translateY(0); }
         .story-text h1 { font-size: 5rem; font-weight: 700; max-width: 800px; line-height: 1.1; letter-spacing: -0.02em; }
         .story-text h2 { font-size: 3rem; font-weight: 600; margin-top: 1rem; letter-spacing: -0.01em; }
@@ -89,7 +73,7 @@
         .section-title { font-size: 4rem; text-align: center; font-weight: 700; margin-bottom: 4rem; letter-spacing: -0.02em; }
         .section-subtitle { font-size: 1.5rem; text-align: center; color: var(--text-color-secondary); max-width: 600px; margin: -2rem auto 4rem; line-height: 1.5; }
 
-        /* --- Expanding Features Grid --- */
+        /* --- Features Grid --- */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .feature-item { text-align: center; background: var(--surface-color); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color); transition: transform 0.4s ease, box-shadow 0.4s ease; }
         .feature-item:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
@@ -104,7 +88,7 @@
         .ui-demo-outer-container { background: var(--surface-color); border-radius: 30px; padding: 2rem; border: 1px solid var(--border-color); }
         .toaster-app { width: 100%; max-width: 800px; margin: auto; height: 400px; background: #111; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
         .selection-view, .timer-view { width: 100%; height: 100%; position: absolute; transition: transform 0.6s cubic-bezier(0.86, 0, 0.07, 1); }
-        .slider-container { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; }
+        .slider-container { width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;}
         .slider { display: flex; height: 100%; transition: transform 0.5s ease; align-items: center; }
         .slide { min-width: 100%; display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column; gap: 1rem; padding: 0 1rem; }
         .toast-img { height: 180px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); margin: auto; }
@@ -123,56 +107,43 @@
         .start-btn:hover { transform: scale(1.1); }
         .start-btn i { color: #000; font-size: 1.5rem; margin-left: 3px; }
         .timer-view { transform: translateX(100%); display:flex; flex-direction:column; justify-content:center; align-items:center; }
-        .progress-ring { width: 160px; height: 160px; }
-        .progress-circle { width: 100%; height: 100%; transform: rotate(-90deg); }
-        .progress-circle-bg { fill: none; stroke: #333; stroke-width: 8px; }
-        .progress-circle-fill { fill: none; stroke: var(--primary-color); stroke-width: 8px; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-        .timer-display { font-size: 3rem; font-weight: 500; color: var(--text-color); margin-top: 2rem; }
+        
+        /* --- GEÄNDERT: Progress Bar statt Circle --- */
+        .progress-bar-container {
+            width: 80%;
+            max-width: 300px;
+            height: 12px;
+            background-color: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .progress-bar-fill {
+            width: 0%; /* Startet bei 0 */
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 6px;
+            transition: width 1s linear; /* Animiert die Breitenänderung */
+        }
+        .timer-display { font-size: 3rem; font-weight: 500; color: var(--text-color); }
         .cancel-btn { background: none; border: 2px solid var(--text-color-secondary); color: var(--text-color-secondary); font-size: 1rem; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 30px; margin-top: 2rem; transition: all 0.3s; }
         .cancel-btn:hover { background: var(--text-color-secondary); color: #000; }
+        
         .toaster-app.timer-active .selection-view { transform: translateX(-100%); }
         .toaster-app.timer-active .timer-view { transform: translateX(0); }
 
         /* --- Gallery Section --- */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-        .gallery-item {
-            border-radius: 20px;
-            overflow: hidden;
-            aspect-ratio: 1 / 1;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .gallery-item { border-radius: 20px; overflow: hidden; aspect-ratio: 1 / 1; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
 
         /* --- Reviews Section --- */
         .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; align-items: stretch; }
-        .review-card { 
-            background: var(--surface-color); 
-            border: 1px solid var(--border-color); 
-            border-radius: 20px; 
-            padding: 2rem;
-            display: flex; /* Flexbox for vertical alignment */
-            flex-direction: column; /* Stack items vertically */
-        }
+        .review-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; }
         .review-stars { color: #f39c12; margin-bottom: 1.5rem; }
         .review-stars i { font-size: 1.2rem; }
-        .review-text { 
-            font-size: 1.1rem; 
-            line-height: 1.6; 
-            color: var(--text-color); 
-            font-style: italic;
-            flex-grow: 1; /* Allow text to grow and push author down */
-        }
+        .review-text { font-size: 1.1rem; line-height: 1.6; color: var(--text-color); font-style: italic; flex-grow: 1; }
         .review-author { margin-top: 1.5rem; font-weight: 600; color: var(--primary-color); }
         .review-author span { display: block; font-weight: 400; color: var(--text-color-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
 
@@ -237,7 +208,6 @@
 </head>
 <body>
     
-    <!-- WIEDERHERGESTELLT: 3D Canvas Container -->
     <div class="canvas-container">
         <canvas id="main-3d-canvas"></canvas>
         <canvas id="mask-3d-canvas"></canvas>
@@ -261,7 +231,6 @@
         </nav>
     </header>
     
-    <!-- WIEDERHERGESTELLT: Scroll-Container für 3D-Animation -->
     <div class="scroll-section-container">
         <div id="story-1" class="story-content">
             <div class="story-text"><h1>Das ist ClearToast.</h1><h2>Toast, neu gedacht.</h2></div>
@@ -312,6 +281,10 @@
             </div>
         </section>
 
+        <div class="modern-image-wrapper">
+            <img src="/assets/renderingproductbild2.jpg" class="rounded-shadow-image" alt="Aufwärmen">
+        </div>
+
         <section id="ui-demo" class="section container">
             <h2 class="section-title">Einfachheit auf Knopfdruck.</h2>
             <div class="ui-demo-outer-container">
@@ -319,11 +292,11 @@
                     <div class="selection-view">
                         <div class="slider-container">
                             <div class="slider" id="demoSlider">
-                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Heat" class="toast-img" alt="Aufwärmen"><h3 class="slide-title">Aufwärmen</h3></div>
-                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Light" class="toast-img" alt="Sehr Leicht"><h3 class="slide-title">Sehr Leicht</h3></div>
-                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Medium" class="toast-img" alt="Leicht"><h3 class="slide-title">Leicht</h3></div>
-                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Strong" class="toast-img" alt="Mittel"><h3 class="slide-title">Mittel</h3></div>
-                                <div class="slide"><img src="https://placehold.co/240x180/1c1c1e/00d1c1?text=Dark" class="toast-img" alt="Stark"><h3 class="slide-title">Stark</h3></div>
+                                <div class="slide"><img src="/assets/heat.png" class="toast-img" alt="Aufwärmen"><h3 class="slide-title"></h3></div>
+                                <div class="slide"><img src="/assets/lightesttoast.png" class="toast-img" alt="Sehr Leicht"><h3 class="slide-title"></h3></div>
+                                <div class="slide"><img src="/assets/lighttoast.png" class="toast-img" alt="Leicht"><h3 class="slide-title"></h3></div>
+                                <div class="slide"><img src="/assets/toastmedium.webp" class="toast-img" alt="Mittel"><h3 class="slide-title"></h3></div>
+                                <div class="slide"><img src="/assets/strongtoast.png" class="toast-img" alt="Stark"><h3 class="slide-title"></h3></div>
                             </div>
                         </div>
                         <button class="nav-btn prev-btn" id="demoPrevBtn"><div class="arrow"></div></button>
@@ -332,11 +305,8 @@
                         <button class="start-btn" id="demoStartBtn"><i class="fas fa-play"></i></button>
                     </div>
                     <div class="timer-view">
-                        <div class="progress-ring">
-                            <svg class="progress-circle" viewBox="0 0 36 36">
-                                <path class="progress-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="progress-circle-fill" id="progressPath" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
+                        <div class="progress-bar-container">
+                            <div id="progressBarFill" class="progress-bar-fill"></div>
                         </div>
                         <div class="timer-display" id="timerDisplay">0:30</div>
                         <button class="cancel-btn" id="cancelBtn">Abbrechen</button>
@@ -349,12 +319,12 @@
              <h2 class="section-title">Passt in jede Küche.</h2>
              <p class="section-subtitle">Klares Design, das sich nahtlos in moderne und klassische Umgebungen einfügt.</p>
              <div class="gallery-grid">
-                 <div class="gallery-item"><img src="https://images.unsplash.com/photo-1588895087224-117511d4e3d3?q=80&w=2574&auto=format&fit=crop" alt="Toaster in einer modernen Küche"></div>
-                 <div class="gallery-item"><img src="https://i.imgur.com/sC5252b.png" alt="Nahaufnahme des Toasters"></div>
-                 <div class="gallery-item"><img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=2670&auto=format&fit=crop" alt="Toaster auf einer Küchentheke mit Frühstück"></div>
-                 <div class="gallery-item"><img src="https://i.imgur.com/L7E192y.png" alt="Toaster von der Seite"></div>
-                 <div class="gallery-item"><img src="https://placehold.co/600x600/111111/f5f5f7?text=Detail+1" alt="Detailaufnahme 1"></div>
-                 <div class="gallery-item"><img src="https://placehold.co/600x600/1c1c1e/f5f5f7?text=Detail+2" alt="Detailaufnahme 2"></div>
+                 <div class="gallery-item"><img src="/assets/renderingproductbild2.jpg" alt="Toaster in einer modernen Küche"></div>
+                 <div class="gallery-item"><img src="/assets/rengferingdesign2.png" alt="Nahaufnahme des Toasters"></div>
+                 <div class="gallery-item"><img src="/assets/renderingproductbild3.png" alt="Toaster auf einer Küchentheke mit Frühstück"></div>
+                 <div class="gallery-item"><img src="/assets/renderingproductbild4.png" alt="Toaster von der Seite"></div>
+                 <div class="gallery-item"><img src="/assets/renderingproductbild5.png" alt="Detailaufnahme 1"></div>
+                 <div class="gallery-item"><img src="/assets/renderingproductbild6.png" alt="Detailaufnahme 2"></div>
              </div>
         </section>
 
@@ -388,7 +358,7 @@
         <section id="buy" class="section container">
             <div class="final-cta">
                 <h2 class="section-title">ClearToast Pro</h2>
-                <p class="section-subtitle" style="font-size: 2rem; color: var(--text-color); margin-top: -3rem;">€249,00</p>
+                <p class="section-subtitle" style="font-size: 2rem; color: var(--text-color); margin-top: -3rem;">€100,00</p>
                 <p class="section-subtitle">Inkl. MwSt., zzgl. Versand. Sofort lieferbar.</p>
                 <button class="btn add-to-cart-btn" style="font-size: 1.2rem; padding: 18px 36px;">In den Warenkorb</button>
             </div>
@@ -467,94 +437,67 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- WIEDERHERGESTELLT: 3D SCROLL ANIMATION ---
+    // --- 3D SCROLL ANIMATION ---
     const visualCanvas = document.getElementById('main-3d-canvas');
-    const maskCanvas = document.getElementById('mask-3d-canvas');
 
-    if (visualCanvas && maskCanvas) {
+    if (visualCanvas) {
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 5);
 
-        let visualModel, maskModel;
+        let visualModel;
 
-        // --- Visual Scene (the pretty one) ---
         const visualScene = new THREE.Scene();
-        const visualRenderer = new THREE.WebGLRenderer({ canvas: visualCanvas, antialias: true, alpha: true });
+        const visualRenderer = new THREE.WebGLRenderer({ 
+            canvas: visualCanvas, 
+            antialias: true, 
+            alpha: true 
+        });
+        
         visualRenderer.setSize(window.innerWidth, window.innerHeight);
         visualRenderer.setPixelRatio(window.devicePixelRatio);
         visualRenderer.toneMapping = THREE.ACESFilmicToneMapping;
         visualRenderer.outputEncoding = THREE.sRGBEncoding;
 
+        // Beleuchtung
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
         visualScene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
         directionalLight.position.set(5, 10, 7.5);
         visualScene.add(directionalLight);
-        
-        // --- Mask Scene (for text inversion) ---
-        const maskScene = new THREE.Scene();
-        const maskRenderer = new THREE.WebGLRenderer({ canvas: maskCanvas, antialias: true, alpha: true });
-        maskRenderer.setSize(window.innerWidth, window.innerHeight);
-        maskRenderer.setPixelRatio(window.devicePixelRatio);
-
-        // --- Create Procedural Toaster Model (more reliable than loading files) ---
-        function createToasterModel() {
-            const group = new THREE.Group();
-            
-            // Main body
-            const bodyGeo = new THREE.BoxGeometry(2, 1.5, 1);
-            const bodyMat = new THREE.MeshStandardMaterial({
-                color: 0xcccccc,
-                metalness: 0.8,
-                roughness: 0.2
-            });
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            group.add(body);
-            
-            // Glass panels
-            const glassMat = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                metalness: 0.1,
-                roughness: 0,
-                transparent: true,
-                opacity: 0.2
-            });
-            const glassGeo = new THREE.BoxGeometry(2.05, 1.55, 1.05);
-            const glass = new THREE.Mesh(glassGeo, glassMat);
-            group.add(glass);
-
-            // Slot
-            const slotGeo = new THREE.BoxGeometry(1.2, 0.2, 0.2);
-            const slotMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-            const slot = new THREE.Mesh(slotGeo, slotMat);
-            slot.position.y = 0.8;
-            group.add(slot);
-            
-            return group;
-        }
-
-        visualModel = createToasterModel();
-        visualModel.position.y = -0.5;
-        visualScene.add(visualModel);
-
-        maskModel = createToasterModel();
-        maskModel.position.y = -0.5;
-        const whiteMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        maskModel.traverse((child) => {
-            if (child.isMesh) {
-                child.material = whiteMaterial;
-            }
-        });
-        maskScene.add(maskModel);
+        const pointLight = new THREE.PointLight(0xffffff, 1.5);
+        pointLight.position.set(-5, 3, 5);
+        visualScene.add(pointLight);
         
         const storySections = document.querySelectorAll('.story-content');
+        
+        // Modell-Loader
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            '/models/toaster.glb',
+            function (gltf) {
+                visualModel = gltf.scene;
+                visualModel.scale.set(6, 6, 6);
+                visualModel.position.y = -1;
+                visualScene.add(visualModel);
+                animate();
+            },
+            undefined,
+            function (error) {
+                console.error('Fehler beim Laden des 3D-Modells:', error);
+                const fallbackGeo = new THREE.BoxGeometry(2, 1.5, 1);
+                const fallbackMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                visualModel = new THREE.Mesh(fallbackGeo, fallbackMat);
+                visualScene.add(visualModel);
+                animate();
+            }
+        );
         
         function updateAnimation() {
             const scrollY = window.scrollY;
             const h = window.innerHeight;
-            if (!visualModel || !maskModel) return;
+            if (!visualModel) return;
 
-            // Scroll-based animation logic
+            // Scroll-basierte Animation
             if (scrollY < h) {
                 const p = scrollY / h;
                 visualModel.rotation.y = p * Math.PI * 0.25;
@@ -574,10 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 camera.rotation.y = 0.2 - p * 0.2;
             }
 
-            // Sync mask model's rotation and position with the visual model
-            maskModel.rotation.copy(visualModel.rotation);
-            maskModel.position.copy(visualModel.position);
-
+            // Sichtbarkeit der Story-Sektionen
             storySections.forEach((section, index) => {
                 const sectionTop = index * h;
                 if (scrollY > sectionTop - h * 0.7 && scrollY < sectionTop + h * 0.3) {
@@ -592,18 +532,14 @@ document.addEventListener('DOMContentLoaded', function() {
             requestAnimationFrame(animate);
             updateAnimation();
             visualRenderer.render(visualScene, camera);
-            maskRenderer.render(maskScene, camera);
         }
-        animate();
-
+        
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             visualRenderer.setSize(window.innerWidth, window.innerHeight);
-            maskRenderer.setSize(window.innerWidth, window.innerHeight);
         });
     }
-
 
     // --- TOASTER UI DEMO ---
     const toasterApp = document.getElementById('toasterApp');
@@ -639,25 +575,40 @@ document.addEventListener('DOMContentLoaded', function() {
             updateDemoSlider();
         });
 
+        // --- GEÄNDERT: Logik für Progress Bar ---
+        const progressBarFill = document.getElementById('progressBarFill');
+        const timerDisplay = document.getElementById('timerDisplay');
+
         document.getElementById('demoStartBtn').addEventListener('click', () => {
             toasterApp.classList.add('timer-active');
             let remainingTime = browningTimes[demoCurrentIndex];
             const totalTime = remainingTime;
-            const progressPath = document.getElementById('progressPath');
             
             clearInterval(timerInterval);
-            
+
+            // Setze Balken sofort auf 0% zurück, bevor die Animation beginnt
+            progressBarFill.style.transition = 'none';
+            progressBarFill.style.width = '0%';
+            // "Reflow" erzwingen, damit der Reset gerendert wird
+            progressBarFill.offsetHeight; 
+            // Transition für die Animation wieder aktivieren
+            progressBarFill.style.transition = `width ${totalTime}s linear`;
+            // Animation starten
+            progressBarFill.style.width = '100%';
+
+            // Timer-Anzeige aktualisieren
+            timerDisplay.textContent = `0:${remainingTime.toString().padStart(2, '0')}`;
             timerInterval = setInterval(() => {
                 remainingTime--;
-                document.getElementById('timerDisplay').textContent = `0:${remainingTime.toString().padStart(2, '0')}`;
-                const progress = ((totalTime - remainingTime) / totalTime) * 100;
-                progressPath.style.strokeDasharray = `${progress}, 100`;
+                timerDisplay.textContent = `0:${remainingTime.toString().padStart(2, '0')}`;
                 
-                if (remainingTime <= 0) {
+                if (remainingTime < 0) {
                     clearInterval(timerInterval);
                     setTimeout(() => {
                         toasterApp.classList.remove('timer-active');
-                        progressPath.style.strokeDasharray = `0, 100`;
+                        // Setze Balken für den nächsten Durchlauf zurück
+                        progressBarFill.style.transition = 'none';
+                        progressBarFill.style.width = '0%';
                     }, 500);
                 }
             }, 1000);
@@ -666,23 +617,23 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('cancelBtn').addEventListener('click', () => {
             clearInterval(timerInterval);
             toasterApp.classList.remove('timer-active');
-            document.getElementById('progressPath').style.strokeDasharray = `0, 100`;
+            // Setze Balken beim Abbrechen zurück
+            progressBarFill.style.transition = 'none';
+            progressBarFill.style.width = '0%';
         });
 
         updateDemoSlider();
     }
 
-    // --- REALISTISCHER CHECKOUT ---
+    // --- CHECKOUT LOGIK (unverändert) ---
     const cart = {
         items: [],
-        product: { id: 1, name: 'ClearToast Pro', price: 249.00, image: 'https://placehold.co/80x80/1c1c1e/00d1c1?text=CTP' }
+        product: { id: 1, name: 'ClearToast Pro', price: 100.00, image: '/assets/renderingproductbild2.jpg' }
     };
-    
     const modalOverlay = document.getElementById('modalOverlay');
     const modalTitle = document.getElementById('modalTitle');
     const modalBackBtn = document.getElementById('modalBackBtn');
     const modalNextBtn = document.getElementById('modalNextBtn');
-
     let currentViewIndex = 0;
     const viewOrder = ['view-cart', 'view-shipping', 'view-payment', 'view-confirm'];
     
@@ -700,17 +651,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateModalState() {
         document.querySelectorAll('.modal-view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewOrder[currentViewIndex]).classList.add('active');
-        
         modalBackBtn.style.display = currentViewIndex > 0 ? 'inline-block' : 'none';
-        
         const titles = ['Warenkorb', 'Lieferadresse', 'Zahlungsmethode', 'Bestellung prüfen'];
         modalTitle.textContent = titles[currentViewIndex];
-        
         const nextLabels = ['Zur Kasse', 'Weiter zur Zahlung', 'Weiter zur Prüfung', 'Jetzt Kaufen'];
         modalNextBtn.textContent = nextLabels[currentViewIndex];
-        
         modalNextBtn.disabled = (currentViewIndex === 0 && cart.items.length === 0);
-        
         if(currentViewIndex === 3) {
             populateOrderSummary();
         }
@@ -718,7 +664,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleNext() {
         if (!validateCurrentStep()) return;
-
         if (currentViewIndex < viewOrder.length - 1) {
             currentViewIndex++;
             updateModalState();
@@ -767,7 +712,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const shippingForm = new FormData(document.getElementById('shipping-form'));
         const paymentMethod = document.querySelector('.payment-option.selected')?.dataset.value;
         const totalCost = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
         let paymentText = 'Nicht angegeben';
         if (paymentMethod === 'credit-card') paymentText = 'Kreditkarte';
         if (paymentMethod === 'paypal') paymentText = 'PayPal';
